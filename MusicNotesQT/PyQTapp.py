@@ -64,6 +64,7 @@ class MainApp(QMainWindow):
         self.actionFile_save_options.triggered.connect(self.options_trig)
         self.actionOther.triggered.connect(self.options_trig)
         self.actionImage.triggered.connect(self.open_image)
+        self.actionProject.triggered.connect(self.open_pr)
         self.actionSave_as.triggered.connect(self.save_as_pr)
         self.actionSave.triggered.connect(self.save_pr)
         self.actionImport_in.triggered.connect(self.import_pr)
@@ -110,10 +111,57 @@ class MainApp(QMainWindow):
         self.image_paths = fname
         self.lineFileOpen.setText(fname)
 
+    def open_pr(self):
+        fname = QFileDialog.getOpenFileName(
+            self, 'Выбрать проект', '',
+            'Файл (*.csv);;Все файлы (*)')[0]
+        file_name = os.path.basename(fname)
+        self.name_project = file_name
+        self.file_location = fname
+        self.setWindowTitle(f"MyNotesOpen - {self.name_project}")
+        if fname != "":
+            try:
+                with open(fname, "r", encoding="utf8") as file:
+                    reader = csv.reader(file)
+                    rows = []
+                    for row in reader:
+                        rows.append(row)
+                    self.lineFileOpen.setText(str(rows[0][0]))
+                    self.file_location = rows[0][0]
+                    html_content = f"""
+                                <html>
+                                  <head></head>
+                                  <body>
+                                    <img src="{rows[0][0]}" style="height: 100%; width: auto; z-index: 0;">
+                                  </body>
+                                </html>
+                                """
+                    notes_d = {}
+                    notes = []
+                    for i in range(1, len(rows)):
+                        key = int(rows[i][0])
+                        value = rows[i][1]
+                        numbers = list(map(int, rows[i][2:]))
+                        if key in notes_d:
+                            notes_d[key].append((value, numbers))
+                        else:
+                            notes_d[key] = [(value, numbers)]
+                    for _, item in notes_d.items():
+                        notes.append(item)
+                    self.notes = notes
+                    self.textBrowser.setHtml(html_content)
+                    self.buttonOriginal.setEnabled(True)
+                self.con = sqlite3.connect(r"Open_projects.db")
+                self.con.execute(
+                    f"INSERT INTO projects ( name, location) VALUES ( '{self.name_project}', '{self.file_location}')")
+                self.con.commit()
+            except Exception:
+                self.statusbar.showMessage("!Error openfile.")
+
+
     def pr_trig(self, num):
         self.buttonOriginal.setEnabled(True)
         self.name_project = self.sender().text()
-        self.file_location
         self.setWindowTitle(f"MyNotesOpen - {self.name_project}")
         try:
             with open(self.adressHolder[num], "r", encoding="utf8") as file:
