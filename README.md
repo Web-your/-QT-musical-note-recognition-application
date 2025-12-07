@@ -7,3 +7,10 @@
  # The main page
   ![photoUpload](./Vis_for_README/Vid_photoUpload.gif)
   By clicking on the file menu and selecting Open -> New image, you can select a photo in the .jpg and .png format in the file explorer.
+  ![projectUpload](./Vis_for_README/Vid_projectUpload.gif)
+  By clicking on the file menu and selecting Open -> New project, you can select an already saved .csv project and open it.
+  ![detectOption](./Vis_for_README/Vid_detectOption.gif)
+  By clicking on the options menu and selecting Detected options, you can create your own algorithm preset.
+  ![otherOption](./Vis_for_README/Vid_otherOption.gif)
+  By clicking on the options menu and selecting Other options, you can edit the app's settings.
+  
